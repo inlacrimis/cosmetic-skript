@@ -1,0 +1,416 @@
+#on join:
+#    if player has permission "cosmetic.tester":
+#        set {_name} to name of player
+#        set {_formattedName} to ""
+#        loop {_name} times:
+#            set {_char} to character {loop-index} of {_name}
+#            if (loop-index) mod 2 is 0:
+ #               set {_formattedName} to "{_formattedName}&c{_char}"
+ #           else:
+#                set {_formattedName} to "{_formattedName}&4{_char}"
+#            set tablist name of player to {_formattedName}
+
+options:
+    prefix: &7&lANGEL &f|
+    servername: &7&lheavenly
+    {usedcosms}: false
+
+# credits to fusezion for the massive help here
+
+function colorTablistName(name:string, colors:strings) :: string: # colorTablistName(loop-player's name, ("&c", "&4"))
+    set {_nameChars::*} to {_name} split at ""
+    set {_charPerColor} to length of {_name} / size of {_colors::*}
+  # if name is 4 but color is 2 it'll be 2 chars then new color
+    loop {_nameChars::*}:
+        if {_newName::%{_nextColor}+1%} is not set:
+            set {_newName::%{_nextColor}+1%} to "%(({_nextColor}+1)st element out of {_colors::*}) ? ""%%loop-value%"
+        else:
+            set {_newName::%{_nextColor}+1%} to "%{_newName::%{_nextColor}+1%} ? ""%%loop-value%"
+        length of uncolored {_newName::%{_nextColor}+1%} >= {_charPerColor}
+        add 1 to {_nextColor} # Should make it 2
+    return (join {_newName::*} with "") ? {_name} # we're just gonna default incase of issues
+
+
+
+command /store:
+    trigger:
+        set {_clocklore::*} to "&7If you want to trade your cosmetics," and "&7create a ticket via our discord." and "&7type '/discord' in chat."
+        set {_lore::*} to "&ePrice: &f2000 Petals" and "&6" and "&cNote:" and "&fYour chance of getting any title is" and "&fthe same, completely random." and "&6" and "- &fhea&7ven" and "- &7ang&8el" and "- &4de&8mo&cni&cc" and "- &bpas&dtel" and "- &0quiet &8lucifer" and "- &agreen lemon" and "- &fhea&7ven" and "- &0undead" and "- &8dead" and "- &3sky blue" and "- &dpinkonade" and "- &4bloody"
+        set {_gui} to a new chest inventory with 3 row with name "&f&lpetal store."
+        set slot 0 of {_gui} to light gray stained glass pane named "&7"
+        set slot 1 of {_gui} to black stained glass pane named "&7"
+        set slot 2 of {_gui} to light gray stained glass pane named "&7"
+        set slot 3 of {_gui} to black stained glass pane named "&7"
+        set slot 4 of {_gui} to clock named "&fInfo&7rmat&fion:" with lore {_clocklore::*}
+        set slot 5 of {_gui} to black stained glass pane named "&7"
+        set slot 6 of {_gui} to light gray stained glass pane named "&7"
+        set slot 7 of {_gui} to black stained glass pane named "&7"
+        set slot 8 of {_gui} to light gray stained glass pane named "&7"
+        set slot 9 of {_gui} to name tag named "&6&lEXCLUSIVE &f&lTABLIST!" with lore {_lore::*}
+        set slot 18 of {_gui} to black stained glass pane named "&7"
+        set slot 19 of {_gui} to light gray stained glass pane named "&7"
+        set slot 20 of {_gui} to black stained glass pane named "&7"
+        set slot 21 of {_gui} to light gray stained glass pane named "&7"
+        set slot 22 of {_gui} to black stained glass pane named "&7"
+        set slot 23 of {_gui} to light gray stained glass pane named "&7"
+        set slot 24 of {_gui} to black stained glass pane named "&7"
+        set slot 25 of {_gui} to light gray stained glass pane named "&7"
+        set slot 26 of {_gui} to black stained glass pane named "&7"
+        open {_gui} to player
+
+
+
+on inventory click:
+    if name of event-inventory is "&f&lpetal store.":
+        if index of event-slot = 9:
+            if {petals.%uuid of event-player%} is greater than 1249:
+                remove 2000 from {petals.%uuid of event-player%}
+                set {reward} to random element out of "heaven", "angel", "demonic", "pastel", "quiet lucifer", "green lemon", "undead", "pinkonade", "bloody", "sky blue" and "dead"
+                if {reward} is "heaven":
+                    set event-player's tablist name to coloured colorTablistName(player's name, ("&f", "&7", "&f", "&7", "&f", "&7"))    
+                    play "ENTITY_ENDER_DRAGON_GROWL" to players
+                    broadcast "&a%event-player% &fhas won &6&l%{reward}% &ftablist cosmetic!"
+                    log "[TABLIST] %event-player% has won %{reward}% tablist." to "purchases/cosmetics.log"
+                    if {usedcosm.%uuid of player%.heaven} is set:
+                        delete {usedcosm.%uuid of player%::*}
+                        set {usedcosm.%uuid of player%.heaven} to true
+                    else:
+                        set {usedcosm.%uuid of player%.heaven} to true
+                    delete {reward}
+                if {reward} is "angel":
+                    set event-player's tablist name to coloured colorTablistName(player's name, ("&7", "&8", "&7", "&8", "&7", "&8"))    
+                    play "ENTITY_ENDER_DRAGON_GROWL" to players    
+                    broadcast "&a%event-player% &fhas won &6&l%{reward}% &ftablist cosmetic!"
+                    log "[TABLIST] %event-player% has won %{reward}% tablist." to "purchases/cosmetics.log"
+                    if {usedcosm.%uuid of event-player%::*} is set:
+                        delete {usedcosm.%uuid of player%::*}
+                        set {usedcosm.%uuid of player%.angel} to true
+                    else:
+                        set {usedcosm.%uuid of player%.angel} to true
+                    delete {reward}
+
+                if {reward} is "demonic":
+                    set event-player's tablist name to coloured colorTablistName(player's name, ("&4", "&8", "&c", "&7", "&4", "&c"))  
+                    play "ENTITY_ENDER_DRAGON_GROWL" to players
+                    broadcast "&a%event-player% &fhas won &6&l%{reward}% &ftablist cosmetic!"
+                    log "[TABLIST] %event-player% has won %{reward}% tablist." to "purchases/cosmetics.log"
+                    if {usedcosm.%uuid of event-player%::*} is set:
+                        delete {usedcosm.%uuid of player%::*}
+                        set {usedcosm.%uuid of player%.demonic} to true
+                    else:
+                        set {usedcosm.%uuid of player%.demonic} to true
+                    delete {reward}
+
+                if {reward} is "pastel":
+                    set event-player's tablist name to coloured colorTablistName(player's name, ("&b", "&d", "&b", "&d", "&b", "&d"))  
+                    play "ENTITY_ENDER_DRAGON_GROWL" to players
+                    broadcast "&a%event-player% &fhas won &6&l%{reward}% &ftablist cosmetic!"
+                    log "[TABLIST] %event-player% has won %{reward}% tablist." to "purchases/cosmetics.log"
+                    if {usedcosm.%uuid of event-player%::*} is set:
+                        delete {usedcosm.%uuid of player%::*}
+                        set {usedcosm.%uuid of player%.pastel} to true
+                    else:
+                        set {usedcosm.%uuid of player%.pastel} to true
+                    delete {reward}
+
+                if {reward} is "quiet lucifer":
+                    set event-player's tablist name to coloured colorTablistName(player's name, ("&0", "&8", "&0", "&8", "&0", "&8")) 
+                    play "ENTITY_ENDER_DRAGON_GROWL" to players
+                    broadcast "&a%event-player% &fhas won &6&l%{reward}% &ftablist cosmetic!"
+                    log "[TABLIST] %event-player% has won %{reward}% tablist." to "purchases/cosmetics.log"
+                    if {usedcosm.%uuid of event-player%::*} is set:
+                        delete {usedcosm.%uuid of player%::*}
+                        set {usedcosm.%uuid of player%.quietlucif} to true
+                    else:
+                        set {usedcosm.%uuid of player%.quietlucif} to true
+                    delete {reward}
+
+                if {reward} is "green lemon":
+                    set event-player's tablist name to coloured colorTablistName(player's name, ("&a"))  
+                    broadcast "&a%event-player% &fhas won &3%{reward}% &ftablist cosmetic!"
+                    play "BLOCK_NOTE_BLOCK_PLING" to players  
+                    log "[TABLIST] %event-player% has won %{reward}% tablist." to "purchases/cosmetics.log"
+                    if {usedcosm.%uuid of event-player%::*} is set:
+                        delete {usedcosm.%uuid of player%::*}
+                        set {usedcosm.%uuid of player%.greenlemon} to true
+                    else:
+                        set {usedcosm.%uuid of player%.greenlemon} to true
+                    delete {reward}
+
+                if {reward} is "undead":
+                    set event-player's tablist name to coloured colorTablistName(player's name, ("&0"))    
+                    broadcast "&a%event-player% &fhas won &3%{reward}% &ftablist cosmetic!"
+                    play "BLOCK_NOTE_BLOCK_PLING" to players
+                    log "[TABLIST] %event-player% has won %{reward}% tablist." to "purchases/cosmetics.log"
+                    if {usedcosm.%uuid of event-player%::*} is set:
+                        delete {usedcosm.%uuid of player%::*}
+                        set {usedcosm.%uuid of player%.undead} to true
+                    else:
+                        set {usedcosm.%uuid of player%.undead} to true
+                    delete {reward}
+
+                if {reward} is "dead":
+                    set event-player's tablist name to coloured colorTablistName(player's name, ("&8")) 
+                    broadcast "&a%event-player% &fhas won &3%{reward}% &ftablist cosmetic!"
+                    play "BLOCK_NOTE_BLOCK_PLING" to players
+                    log "[TABLIST] %event-player% has won %{reward}% tablist." to "purchases/cosmetics.log"
+                    if {usedcosm.%uuid of event-player%::*} is set:
+                        delete {usedcosm.%uuid of player%::*}
+                        set {usedcosm.dead.%uuid of player%} to true
+                    else:
+                        set {usedcosm.dead.%uuid of player%} to true
+                    delete {reward}
+
+                if {reward} is "sky blue":
+                    set event-player's tablist name to coloured colorTablistName(player's name, ("&3")) 
+                    broadcast "&a%event-player% &fhas won &3%{reward}% &ftablist cosmetic!"
+                    play "BLOCK_NOTE_BLOCK_PLING" to players
+                    log "[TABLIST] %event-player% has won %{reward}% tablist." to "purchases/cosmetics.log"
+                    if {usedcosm.%uuid of event-player%::*} is set:
+                        delete {usedcosm.%uuid of player%::*}
+                        set {usedcosm.%uuid of player%.skyblue} to true
+                    else:
+                        set {usedcosm.%uuid of player%.skyblue} to true
+                    delete {reward}
+
+                if {reward} is "pinkonade":
+                    set event-player's tablist name to coloured colorTablistName(player's name, ("&d")) 
+                    broadcast "&a%event-player% &fhas won &3%{reward}% &ftablist cosmetic!"
+                    play "BLOCK_NOTE_BLOCK_PLING" to players
+                    log "[TABLIST] %event-player% has won %{reward}% tablist." to "purchases/cosmetics.log"
+                    if {usedcosm.%uuid of event-player%::*} is set:
+                        delete {usedcosm.%uuid of player%::*}
+                        set {usedcosm.%uuid of player%.pinkonade} to true
+                    else:
+                        set {usedcosm.%uuid of player%.pinkonade} to true
+                    delete {reward}
+
+                if {reward} is "bloody":
+                    set event-player's tablist name to coloured colorTablistName(player's name, ("&4")) 
+                    broadcast "&a%event-player% &fhas won &3%{reward}% &ftablist cosmetic!"
+                    play "BLOCK_NOTE_BLOCK_PLING" to players
+                    log "[TABLIST] %event-player% has won %{reward}% tablist." to "purchases/cosmetics.log"
+                    if {usedcosm.%uuid of event-player%::*} is set:
+                        delete {usedcosm.%uuid of player%::*}
+                        set {usedcosm.%uuid of player%.bloody} to true
+                    else:
+                        set {usedcosm.%uuid of player%.bloody} to true
+                    delete {reward}
+            else:
+                send "{@prefix} &cyou don't have enough petals to buy that."
+        
+            cancel event
+
+
+command /cosmetics [<text>] [<text>] [<offlineplayer>] [<text>]: 
+    permission: cosmetic.admin
+    permission message: "{@prefix} &cyou have no permissions to use this."
+    trigger:
+        if arg-1 is "tablist":
+            if arg-2 is "set":
+                if arg-3 is set:
+                    if arg-4 is "beta-tester":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("<##4646f0>", "<##3333f5>", "<##1b1bcc>", "<##101091>", "<##0b0b7d>", "<##090963>"))
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        set {usedcosm.%uuid of arg-3%.btester} to true
+                    if arg-4 is "exec":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("&4", "&c", "&4", "&c", "&4", "&c"))
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        set {usedcosm.%uuid of arg-3%.exec} to true
+                    if arg-4 is "heaven":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("&f", "&7", "&f", "&7", "&f", "&7"))    
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.heaven} to true
+                    if arg-4 is "angel":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("&7", "&8", "&7", "&8", "&7", "&8"))    
+                        play "BLOCK_NOTE_BLOCK_PLING" to player 
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.angel} to true
+                    
+                    if arg-4 is "demonic":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("&4", "&8", "&c", "&7", "&4", "&c"))  
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.demonic} to true
+
+                    if arg-4 is "pastel":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("&b", "&d", "&b", "&d", "&b", "&d"))  
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.pastel} to true
+
+                    if arg-4 is "quiet lucifer":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("&0", "&8", "&0", "&8", "&0", "&8")) 
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.quietlucif} to true
+
+                    if arg-4 is "green lemon":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("&a"))  
+                        play "BLOCK_NOTE_BLOCK_PLING" to player  
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.greenlemon} to true
+
+                    if arg-4 is "undead":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("&0"))    
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.undead} to true
+
+                    if arg-4 is "dead":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("&8")) 
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.dead} to true
+
+                    if arg-4 is "sky blue":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("&3")) 
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        set {usedcosm.%uuid of arg-3%.skyblue} to true
+
+                    if arg-4 is "pinkonade":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("&d")) 
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.pinkonade} to true
+
+                    if arg-4 is "bloody":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("&4")) 
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.bloody} to true
+                        
+                    if arg-4 is "experimental":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("<##ad71a7>")) 
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.experimental} to true
+                        
+                    if arg-4 is "Nskyblue":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("<##87CEEB>")) 
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.Nskyblue} to true
+                        
+                    if arg-4 is "sunset":
+                        set arg-3's tablist name to coloured colorTablistName(arg-3's name, ("<##3E5879>", "<##9BA5AE>", "<##DCB697>", "<##FC7001>", "<##DD723C>", "<##AD4A28>", "<##040308>")) 
+                        play "BLOCK_NOTE_BLOCK_PLING" to player
+                        log "[TABLIST] %arg-3% has obtained %arg-4% tablist." to "purchases/cosmetic actions.log"
+                        send "{@prefix} &asuccessfully set &f%arg-3%&a's &6%arg-1% &fto &9%arg-4%"
+                        set {usedcosm.%uuid of arg-3%.sunset} to true
+
+                    else if arg-4 is not set: 
+                        send "{@prefix} &cwrong usage, please specify what cosmetic you'd like to apply for the player."
+                else:
+                    send "{@prefix} &cwrong usage, please include user's in-game name."
+            if arg-2 is "remove":
+                if arg-3 is set:
+                    set arg-3's tablist name to "&f%arg-3%"
+                    send "{@prefix} &asuccessfully removed &f%arg-3%&a's &a%arg-1% cosmetic"
+                    delete {cosmetics::tablist::%uuid of arg-3%::%arg-4%}
+
+            else if arg-2 is not set:
+                send "{@prefix} &cwrong usage, specify what action you'd like to deploy on %arg-1%"
+        
+        else:
+            send "{@prefix} &cwrong usage, specify what cosmetic you'd like to manage."
+
+on join:
+    if {usedcosm.%uuid of event-player%.sunset} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("<##3E5879>", "<##9BA5AE>", "<##DCB697>", "<##FC7001>", "<##DD723C>", "<##AD4A28>", "<##040308>")) 
+    if {usedcosm.%uuid of event-player%.heaven} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&f", "&7", "&f", "&7", "&f", "&7"))
+    if {usedcosm.%uuid of event-player%.Nskyblue} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("<##87CEEB>", "<##6ee8fa>", "<##4ca6bd>", "<##4291a9>", "<##387d94>", "<##26566b>", "<##1c4357>")) 
+    if {usedcosm.%uuid of event-player%.experimental} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&f", "&7", "&f", "&7", "&f", "&7")) 
+    if {usedcosm.%uuid of event-player%.angel} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&7", "&8", "&7", "&8", "&7", "&8"))  
+    if {usedcosm.%uuid of event-player%.demonic} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&4", "&8", "&c", "&7", "&4", "&c"))  
+    if {usedcosm.%uuid of event-player%.pastel} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&b", "&d", "&b", "&d", "&b", "&d")) 
+    if {usedcosm.%uuid of event-player%.quietlucif} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&0", "&8", "&0", "&8", "&0", "&8")) 
+    if {usedcosm.%uuid of event-player%.greenlemon} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&a")) 
+    if {usedcosm.%uuid of event-player%.undead} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&0")) 
+    if {usedcosm.%uuid of event-player%.dead} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&8")) 
+    if {usedcosm.%uuid of event-player%.skyblue} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&3")) 
+    if {usedcosm.%uuid of event-player%.pinkonade} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&d")) 
+    if {usedcosm.%uuid of event-player%.bloody} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&4"))
+    if {usedcosm.%uuid of event-player%.btester} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("<##4646f0>", "<##3333f5>", "<##1b1bcc>", "<##101091>", "<##0b0b7d>", "<##090963>"))
+    if {usedcosm.%uuid of event-player%.exec} is true:
+        set event-player's tablist name to coloured colorTablistName(event-player's name, ("&4", "&c", "&4", "&c", "&4", "&c"))
+    else:
+        stop
+
+on load:
+    set {cosmkey} to name tag named "&7&lCosmetic Key" with lore "&7Right-click anywhere to open the Cosmetic crate & get a reward!"
+
+command /cosmkey:
+    permission: op
+    trigger:
+        give {cosmkey} to player
+        send "done" to player
+
+on right click with name tag:
+    if name of tool of player is "&7&lCosmetic Key":
+        if lore of tool of player is "&7Right-click anywhere to open the Cosmetic crate & get a reward!":
+            set {reward} to random element out of "exec" and "beta-tester"
+            if {reward} is "exec":
+                set event-player's tablist name to coloured colorTablistName(player's name, ("&4", "&c", "&4", "&c", "&4", "&c"))
+                broadcast "&a%event-player% &fhas won &6&l%{reward}% &ftablist cosmetic!"
+                play "ENTITY_ENDER_DRAGON_GROWL" to players
+            if {reward} is "beta-tester":
+                set event-player's tablist name to coloured colorTablistName(player's name, ("&1", "&9", "&1", "&9", "&1", "&9"))
+                broadcast "&a%event-player% &fhas won &6&l%{reward}% &ftablist cosmetic!"
+                play "ENTITY_ENDER_DRAGON_GROWL" to players
+            delete {reward}
+            remove name tag named "&7&lCosmetic Key" with lore "&7Right-click anywhere to open the Cosmetic crate & get a reward!" from the player
+
+
+    # the coloured/formatted is needed as skript is bad at parsing colors
+    
+command /hexcolor:
+    permission: op
+    trigger:
+        send "<##ad71a7> hi"
+    
+on chat:
+    if player has permission "lp.exec":
+        set chat format to "&0&lEXEC &8[player]&7: [message]"
+    else if player has permission "lp.admin":
+        set chat format to "<light blue>&lADMIN <light blue>[player]<light gray>: <light blue>[message]"
+    else if player has permission "lp.mod":
+        set chat format to "<pink>&lMOD <pink>[player]<light gray>: <pink>[message]"
+    else:
+        set chat format to "<light gray>[player]: <white>[message]"
+        
+    
+        
